@@ -1,29 +1,39 @@
 import { useCallback, useEffect, useState, useContext } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import axios from "axios";
-import { GiphyFetch } from "@giphy/js-fetch-api";
 import {
-  Gif,
   Grid,
   SearchBar,
   SuggestionBar,
   SearchContext,
 } from "@giphy/react-components";
+import Modal from "./components/Modal";
+import "./App.css";
 
 function App() {
-  const { fetchGifs, searchKey } = useContext(SearchContext);
+  const [modalGif, setModalGif] = useState("");
 
-  useEffect(() => {
-    console.log(searchKey)
-  },[searchKey])
+  const { fetchGifs, searchKey } = useContext(SearchContext);
 
   return (
     <>
-      <SearchBar />
-      <SuggestionBar />
-      {<Grid key={searchKey} fetchGifs={fetchGifs} columns={4} width={1280} />}
+      <div className="search-bar">
+        <SearchBar />
+        <SuggestionBar />
+      </div>
+      <div className="gif-wrapper">
+        {!searchKey ? <h3>Trendings</h3> : <h3>{searchKey}</h3>}
+        <Grid
+          onGifClick={(gif, e) => {
+            console.log("gif", gif);
+            e.preventDefault();
+            setModalGif(gif);
+          }}
+          key={searchKey}
+          fetchGifs={fetchGifs}
+          width={1280}
+          columns={4}
+        />
+      </div>
+      {modalGif && <Modal gif={modalGif} setGif={(res) => setModalGif(res)} />}
     </>
   );
 }
